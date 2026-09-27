@@ -5,6 +5,7 @@ await connectDB(); //await is best practice to ensure db connection
 import userModel from '../models/user.model.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
 import dotenv from 'dotenv'
+import bcrypt from 'bcryptjs'
 dotenv.config()
 
 
@@ -23,9 +24,7 @@ app.post("/api/register", async (req, res) => {
   let { name, email, password } = req.body
   //for connect to database
   const user = await userModel.create({
-    name,
-    email,
-    password
+    name,email,password: await bcrypt.hash(password, 10)
   });
   const token = jwt.sign(
     {
