@@ -4,6 +4,8 @@ import connectDB from '../config/db.js'
 await connectDB(); //await is best practice to ensure db connection
 import userModel from '../models/user.model.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 const app = express()
@@ -29,7 +31,7 @@ app.post("/api/register", async (req, res) => {
     {
      id: user._id,
     },
-    "qJCd73WUvOZdgriIgg4UewBJxvZXmHeuXiSJp9UjW34="
+   process.env.JWT_SECRET
   );
   res.status(200).json({
     message: "User registered successfully",

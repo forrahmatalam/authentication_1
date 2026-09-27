@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken'
 import userModel from '../models/user.model.js'
+import dotenv from 'dotenv'
+dotenv.config();
 
 
 export const authMiddleware = async (req, res, next) => {
@@ -10,8 +12,8 @@ export const authMiddleware = async (req, res, next) => {
             message: "Token not found"
         });
     }
-    
-const data = jwt.decode(token);
+
+const data = jwt.verify(token,process.env.JWT_SECRET); //verify lagqte hai verify krne ke lie decode ke bajaye
 
 const user = await userModel.findById(data.id);
 
