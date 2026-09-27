@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import connectDB from '../config/db.js'
 await connectDB(); //await is best practice to ensure db connection
 import userModel from '../models/user.model.js'
+import { authMiddleware } from '../middleware/auth.middleware.js'
 
 
 const app = express()
@@ -45,27 +46,15 @@ app.post("/api/register", async (req, res) => {
 
 })
 
-app.get("/api/login",async (req,res)=>{
-try{
-    
-const authHeader = req.headers.authorization;
-console.log(authHeader);
+app.get("/api/login",authMiddleware, async (req, res) => {
 
-   //Decode token to get data
-const data = jwt.decode(authHeader);
-console.log(data);
+  console.log(req.user)
+  res.status(200).json({
+message: "User logged in successfully",
+data: {
+  user:req.user
 
-       //finding data
-const user = await userModel.findById(data.id);
-console.log(user);
-
-res.status(200).json({
-    message: "Login successful"
-});
-}catch(err){
-    res.status(400).json({
-        message:err.message
-    })
-};
+}
+})
 })
 export default app
