@@ -17,9 +17,10 @@ app.get("/api", (req, res) => {
   res.status(200).json({
     message: "Welcome to authentication service"
   })
-})
+});
 
 
+//register api
 app.post("/api/register", async (req, res) => {
   let { name, email, password } = req.body
   //for connect to database
@@ -45,9 +46,10 @@ app.post("/api/register", async (req, res) => {
     }
   })
 
-})
+});
 
-app.get("/api/login",authMiddleware, async (req, res) => {
+//authapi
+app.get("/api/auth",authMiddleware, async (req, res) => {
 
   console.log(req.user)
   res.status(200).json({
@@ -57,5 +59,43 @@ data: {
 
 }
 })
+});
+
+//login api
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user =await userModel.findOne({
+    email
+  });
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+
+  if(!isValidPassword){
+    return res.status(400).json({
+      message: "Invalid password"
+    })
+  };
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+    },
+    process.env.JWT_SECRET
+  );
+  res.status(200).json({
+    message: "User logged in successfully",
+  data: {
+  user: {
+    email: user.email,
+    name: user.name,
+    id: user._id
+  },
+  token
+}
 })
+});
+
+
+
 export default app
