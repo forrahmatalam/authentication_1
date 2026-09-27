@@ -1,5 +1,9 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
+import connectDB from '../config/db.js'
+await connectDB(); //await is best practice to ensure db connection
+import userModel from '../models/user.model.js'
+
 
 const app = express()
 
@@ -13,16 +17,21 @@ app.get("/api", (req, res) => {
 
 })
 
-app.post("/api/register", (req, res) => {
+app.post("/api/register", async (req, res) => {
 
   let { name, email, password } = req.body
 
-  // save data to database
+  //for connect to database
+  const user = await userModel.create({
+    name,
+    email,
+    password
+  })
+  
 
   const token = jwt.sign(
     {
-      name,
-      email
+     id: user._id,
     },
     "qJCd73WUvOZdgriIgg4UewBJxvZXmHeuXiSJp9UjW34="
   )
@@ -33,7 +42,8 @@ app.post("/api/register", (req, res) => {
     data: {
       user: {
         email,
-        name
+        name,
+         id: user._id
       },
       token
     }
